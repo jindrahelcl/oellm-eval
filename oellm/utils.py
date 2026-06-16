@@ -2,6 +2,7 @@ import builtins
 import fnmatch
 import logging
 import os
+import re
 import socket
 import subprocess
 import sys
@@ -106,6 +107,20 @@ def _setup_logging(verbose: bool = False):
     root_logger.setLevel(logging.DEBUG if verbose else logging.INFO)
 
 
+def _cluster_name() -> str:
+    """Return the SLURM cluster name, or empty string if not in a SLURM environment."""
+    try:
+        result = subprocess.run(
+            ["scontrol", "show", "config"], capture_output=True, text=True
+        )
+        match = re.search(r"ClusterName\s*=\s*(\S+)", result.stdout) if result.returncode == 0 else None
+        if match:
+            return match.group(1).strip().lower()
+    except FileNotFoundError:
+        pass
+    return ""
+
+
 def _load_cluster_env() -> None:
     """
     Loads the correct cluster environment variables from `clusters.yaml` based on the hostname.
@@ -114,10 +129,12 @@ def _load_cluster_env() -> None:
 
     shared_cfg = clusters.get("shared", {}) or {}
 
-    def _match_cluster(hostname: str) -> dict | None:
+    def _match_cluster(hostname: str, slurm_cluster: str) -> dict | None:
         for name, cfg in clusters.items():
             if name == "shared":
                 continue
+            if slurm_cluster and name == slurm_cluster:
+                return dict(cfg)
             pattern = cfg.get("hostname_pattern")
             if isinstance(pattern, str):
                 patterns = [pattern]
@@ -130,11 +147,12 @@ def _load_cluster_env() -> None:
         return None
 
     hostname = socket.gethostname()
-    cluster_cfg_raw = _match_cluster(hostname)
+    slurm_cluster = _cluster_name()
+    cluster_cfg_raw = _match_cluster(hostname, slurm_cluster)
     if cluster_cfg_raw is None:
         fqdn = socket.getfqdn()
         if fqdn != hostname:
-            cluster_cfg_raw = _match_cluster(fqdn)
+            cluster_cfg_raw = _match_cluster(fqdn, slurm_cluster)
             hostname = fqdn
     if cluster_cfg_raw is None:
         raise ValueError(f"No cluster found for hostname: {hostname}")
