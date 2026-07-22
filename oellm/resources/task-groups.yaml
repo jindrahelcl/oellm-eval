@@ -344,6 +344,54 @@ task_metrics:
   polymath_pt_medium: exact_match
   polymath_pt_high: exact_match
   polymath_pt_top: exact_match
+  # NorEval
+  norec_sentence_p0: f1
+  norec_sentence_p1: f1
+  norec_sentence_p2: f1
+  norec_sentence_p3: f1
+  norec_sentence_p4: f1
+  norec_document_p0: f1
+  norec_document_p1: f1
+  norec_document_p2: f1
+  norec_document_p3: f1
+  norec_document_p4: f1
+  norquad_p0: f1
+  norquad_p1: f1
+  norquad_p2: f1
+  norquad_p3: f1
+  norquad_p4: f1
+  noridiom_nob_p0: fscore
+  noridiom_nob_p1: fscore
+  noridiom_nob_p2: fscore
+  noridiom_nob_p3: fscore
+  noridiom_nob_p4: fscore
+  noridiom_nno_p0: fscore
+  noridiom_nno_p1: fscore
+  noridiom_nno_p2: fscore
+  noridiom_nno_p3: fscore
+  noridiom_nno_p4: fscore
+  norsumm_nob_p0: rougeL_max
+  norsumm_nob_p1: rougeL_max
+  norsumm_nob_p2: rougeL_max
+  norsumm_nob_p3: rougeL_max
+  norsumm_nob_p4: rougeL_max
+  norsumm_nob_p5: rougeL_max
+  norsumm_nno_p0: rougeL_max
+  norsumm_nno_p1: rougeL_max
+  norsumm_nno_p2: rougeL_max
+  norsumm_nno_p3: rougeL_max
+  norsumm_nno_p4: rougeL_max
+  norsumm_nno_p5: rougeL_max
+  nortruthfulqa_gen_nob_p0: rougeL_max
+  nortruthfulqa_gen_nob_p1: rougeL_max
+  nortruthfulqa_gen_nob_p2: rougeL_max
+  nortruthfulqa_gen_nob_p3: rougeL_max
+  nortruthfulqa_gen_nob_p4: rougeL_max
+  nortruthfulqa_gen_nno_p0: rougeL_max
+  nortruthfulqa_gen_nno_p1: rougeL_max
+  nortruthfulqa_gen_nno_p2: rougeL_max
+  nortruthfulqa_gen_nno_p3: rougeL_max
+  nortruthfulqa_gen_nno_p4: rougeL_max
 
 task_groups:
   sib200-eu:
@@ -805,8 +853,172 @@ task_groups:
     tasks:
       - task: "polymath_{lang}_top"
         subset: "{lang}"
+  noreval-nob:
+    description: "NorEval Bokmål — all prompt variants (NorEval 1.1)"
+    suite: lm-eval-harness
+    n_shots: [0]
+    tasks:
+      - task: norec_sentence
+        dataset: ltg/norec_sentence
+      - task: norec_document
+        dataset: ltg/norec_document
+      - task: noridiom_nob
+        dataset: Sprakbanken/Norwegian_idioms
+      - task: norquad
+        dataset: ltg/norquad
+      - task: nrk_quiz_qa_nob
+        dataset: ltg/nrk_quiz_qa
+      - task: noropenbookqa_nob
+        dataset: ltg/noropenbookqa
+      - task: noropenbookqa_no_fact_nob
+        dataset: ltg/noropenbookqa
+      - task: nortruthfulqa_mc_nob
+        dataset: ltg/nortruthfulqa_mc
+      - task: nortruthfulqa_gen_nob
+        dataset: ltg/nortruthfulqa_gen
+      - task: norcommonsenseqa_nob
+        dataset: ltg/norcommonsenseqa
+      - task: norsumm_nob
+        dataset: SamiaT/NorSumm
+      - task: tatoeba_eng_nob
+        dataset: Helsinki-NLP/tatoeba_mt
+      - task: tatoeba_nob_eng
+        dataset: Helsinki-NLP/tatoeba_mt
+
+  noreval-nno:
+    description: "NorEval Nynorsk — all prompt variants (NorEval 1.1)"
+    suite: lm-eval-harness
+    n_shots: [0]
+    tasks:
+      - task: noridiom_nno
+        dataset: Sprakbanken/Norwegian_idioms
+      - task: nrk_quiz_qa_nno
+        dataset: ltg/nrk_quiz_qa
+      - task: noropenbookqa_nno
+        dataset: ltg/noropenbookqa
+      - task: noropenbookqa_no_fact_nno
+        dataset: ltg/noropenbookqa
+      - task: nortruthfulqa_mc_nno
+        dataset: ltg/nortruthfulqa_mc
+      - task: nortruthfulqa_gen_nno
+        dataset: ltg/nortruthfulqa_gen
+      - task: norcommonsenseqa_nno
+        dataset: ltg/norcommonsenseqa
+      - task: norsumm_nno
+        dataset: SamiaT/NorSumm
+      - task: tatoeba_eng_nno
+        dataset: Helsinki-NLP/tatoeba_mt
+      - task: tatoeba_nno_eng
+        dataset: Helsinki-NLP/tatoeba_mt
+
+  noreval-neutral:
+    description: "NorEval tasks without a Bokmål/Nynorsk split (NorEval 1.1)"
+    suite: lm-eval-harness
+    n_shots: [0]
+    tasks:
+      - task: norbelebele
+        dataset: ltg/norbelebele
+      - task: slide
+        dataset: ltg/slide
+      - task: ncb
+        dataset: hcfa/ncb
+      - task: nocola
+        dataset: ltg/nocola
+      - task: noreval_multiblimp
+        dataset: jumelet/multiblimp
+
+  noreval-instruct:
+    description: "NorEval instruction-following (NorEval 1.1)"
+    suite: lm-eval-harness
+    n_shots: [0]
+    tasks:
+      - task: norrewrite_instruct
+        dataset: ltg/norrewrite-instruct
+      - task: norsummarize_instruct
+        dataset: ltg/norsummarize-instruct
+
+  noreval-translation:
+    description: "NorEval Bokmål/Nynorsk and Northern Sámi translation (NorEval 1.1)"
+    suite: lm-eval-harness
+    n_shots: [0]
+    tasks:
+      - task: norsumm_nob_nno_translation
+        dataset: ltg/norsumm-nob-nno-translation
+      - task: norsumm_nno_nob_translation
+        dataset: ltg/norsumm-nob-nno-translation
+      - task: tatoeba_sme_nob
+        dataset: ltg/saami-tatoeba
+      - task: tatoeba_nob_sme
+        dataset: ltg/saami-tatoeba
+
+  noreval-nob-p0:
+    description: "NorEval Bokmål — first prompt only, for routine model tracking"
+    suite: lm-eval-harness
+    n_shots: [0]
+    tasks:
+      - task: norec_sentence_p0
+        dataset: ltg/norec_sentence
+      - task: norec_document_p0
+        dataset: ltg/norec_document
+      - task: noridiom_nob_p0
+        dataset: Sprakbanken/Norwegian_idioms
+      - task: norquad_p0
+        dataset: ltg/norquad
+      - task: nrk_quiz_qa_nob_p0
+        dataset: ltg/nrk_quiz_qa
+      - task: noropenbookqa_nob_p0
+        dataset: ltg/noropenbookqa
+      - task: nortruthfulqa_mc_nob_p0
+        dataset: ltg/nortruthfulqa_mc
+      - task: nortruthfulqa_gen_nob_p0
+        dataset: ltg/nortruthfulqa_gen
+      - task: norcommonsenseqa_nob_p0
+        dataset: ltg/norcommonsenseqa
+      - task: norsumm_nob_p0
+        dataset: SamiaT/NorSumm
+      - task: norbelebele_p0
+        dataset: ltg/norbelebele
+      - task: ncb
+        dataset: hcfa/ncb
+      - task: nocola
+        dataset: ltg/nocola
+
+  noreval-nno-p0:
+    description: "NorEval Nynorsk — first prompt only, for routine model tracking"
+    suite: lm-eval-harness
+    n_shots: [0]
+    tasks:
+      - task: noridiom_nno_p0
+        dataset: Sprakbanken/Norwegian_idioms
+      - task: nrk_quiz_qa_nno_p0
+        dataset: ltg/nrk_quiz_qa
+      - task: noropenbookqa_nno_p0
+        dataset: ltg/noropenbookqa
+      - task: nortruthfulqa_mc_nno_p0
+        dataset: ltg/nortruthfulqa_mc
+      - task: nortruthfulqa_gen_nno_p0
+        dataset: ltg/nortruthfulqa_gen
+      - task: norcommonsenseqa_nno_p0
+        dataset: ltg/norcommonsenseqa
+      - task: norsumm_nno_p0
+        dataset: SamiaT/NorSumm
 
 super_groups:
+  noreval:
+    description: "Full NorEval 1.1 suite — all prompt variants, both written standards"
+    task_groups:
+      - task: noreval-nob
+      - task: noreval-nno
+      - task: noreval-neutral
+      - task: noreval-instruct
+      - task: noreval-translation
+
+  noreval-quick:
+    description: "NorEval 1.1 single-prompt subset for routine model tracking"
+    task_groups:
+      - task: noreval-nob-p0
+      - task: noreval-nno-p0
+
   oellm-multilingual:
     description: "Combined Belebele EU set plus multilingual benchmarks"
     task_groups:
