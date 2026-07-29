@@ -2,6 +2,7 @@ import builtins
 import fnmatch
 import logging
 import os
+import re
 import socket
 import subprocess
 import sys
@@ -106,12 +107,31 @@ def _setup_logging(verbose: bool = False):
     root_logger.setLevel(logging.DEBUG if verbose else logging.INFO)
 
 
+def _cluster_name() -> str:
+    """Return the SLURM cluster name, or empty string if not in a SLURM environment."""
+    try:
+        result = subprocess.run(
+            ["scontrol", "show", "config"], capture_output=True, text=True
+        )
+        match = (
+            re.search(r"ClusterName\s*=\s*(\S+)", result.stdout)
+            if result.returncode == 0
+            else None
+        )
+        if match:
+            return match.group(1).strip().lower()
+    except FileNotFoundError:
+        pass
+    return ""
+
+
 def _load_cluster_env() -> None:
     """
     Loads the correct cluster environment variables from `clusters.yaml` based on the hostname.
     """
     clusters = yaml.safe_load((files("oellm.resources") / "clusters.yaml").read_text())
     hostname = socket.gethostname()
+    slurm_cluster = _cluster_name()
 
     shared_cfg = clusters.get("shared", {}) or {}
 
@@ -119,6 +139,9 @@ def _load_cluster_env() -> None:
     for name, cfg in clusters.items():
         if name == "shared":
             continue
+        if slurm_cluster and name == slurm_cluster:
+            cluster_cfg_raw = dict(cfg)
+            break
         pattern = cfg.get("hostname_pattern")
         if isinstance(pattern, str):
             patterns = [pattern]
